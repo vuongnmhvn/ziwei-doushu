@@ -12,7 +12,7 @@ function longitudeCorrection(longitude: number, utcOffsetMinutes: number): numbe
 export function formUtcOffsetMinutes(form: BirthFormState): number {
   if (!form.province) return CHINA_UTC_OFFSET;
   return placeUtcOffsetMinutes(
-    form.province, form.city,
+    form.province, form.latitude,
     parseInt(form.year) || 0, parseInt(form.month) || 0, parseInt(form.day) || 0,
     parseInt(form.clockHour) || 0, parseInt(form.clockMinute) || 0,
   );
@@ -81,6 +81,7 @@ export function formToSearchParams(form: BirthFormState): URLSearchParams {
   if (form.province) p.set('p', form.province);
   if (form.city) p.set('c', form.city);
   if (form.longitude && form.longitude !== 120) p.set('lo', String(form.longitude));
+  if (form.latitude !== undefined) p.set('la', String(form.latitude));
   p.set('g', form.gender === 'male' ? 'm' : 'f');
   return p;
 }
@@ -102,6 +103,7 @@ export function searchParamsToForm(params: URLSearchParams): Partial<BirthFormSt
     province: params.get('p') || '',
     city: params.get('c') || '',
     longitude: parseFloat(params.get('lo') || '120'),
+    latitude: params.get('la') ? parseFloat(params.get('la')!) : undefined,
     gender: params.get('g') === 'f' ? 'female' : 'male',
   };
 }

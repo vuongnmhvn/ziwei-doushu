@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { BirthInfo } from '@/lib/ziwei/types';
 import { SHICHEN } from '@/lib/ziwei/constants';
 import { useTheme } from '@/components/ThemeProvider';
-import { PLACE_GROUPS, findProvince, findCity } from '@/lib/ziwei/birth-place';
+import { PLACE_SYSTEMS, provincesOf, findProvince, systemOf, loadUnits, type PlaceSystem, type PlaceUnit } from '@/lib/ziwei/birth-place';
 import { formatUtcOffset } from '@/lib/ziwei/vn-timezone';
 import { formToBirthInfo, calcTrueSolarBranch, formUtcOffsetMinutes } from '@/lib/ziwei/share';
 import { viShichen } from '@/lib/i18n/vi';
@@ -20,6 +20,8 @@ export interface BirthFormState {
   province: string;
   city: string;
   longitude: number;
+  /** Vĩ độ nơi sinh (Việt Nam): biết nơi đó ở bờ bắc hay bờ nam vĩ tuyến 17 để tra giờ chuẩn lịch sử. */
+  latitude?: number;
   gender: 'male' | 'female';
 }
 
@@ -54,6 +56,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
     province: initialData?.province ?? '',
     city: initialData?.city ?? '',
     longitude: initialData?.longitude ?? 120,
+    latitude: initialData?.latitude,
     gender: initialData?.gender ?? 'male',
   });
 
@@ -66,7 +69,25 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form]);
 
-  const cityList = useMemo(() => findProvince(form.province)?.cities ?? [], [form.province]);
+  // Cách chọn nơi sinh: tỉnh cũ, tỉnh mới hay Trung Quốc
+  const [placeSystem, setPlaceSystem] = useState<PlaceSystem>(() => systemOf(initialData?.province));
+  const systemInfo = PLACE_SYSTEMS.find(s => s.key === placeSystem)!;
+  const provinceList = useMemo(() => provincesOf(placeSystem), [placeSystem]);
+
+  // Quận/huyện, phường/xã tải khi chọn tỉnh
+  const [cityList, setCityList] = useState<PlaceUnit[]>([]);
+  const [unitsState, setUnitsState] = useState<'idle' | 'loading' | 'error'>('idle');
+  const [unitsReload, setUnitsReload] = useState(0);
+  useEffect(() => {
+    setCityList([]);
+    if (!form.province) { setUnitsState('idle'); return; }
+    let cancelled = false;
+    setUnitsState('loading');
+    loadUnits(form.province)
+      .then(list => { if (!cancelled) { setCityList(list); setUnitsState('idle'); } })
+      .catch(() => { if (!cancelled) setUnitsState('error'); });
+    return () => { cancelled = true; };
+  }, [form.province, unitsReload]);
 
   // Giờ chuẩn ở nơi sinh lúc sinh: Việt Nam đổi theo từng thời kỳ (miền Nam 1960–1975 là GMT+8).
   const utcOffset = formUtcOffsetMinutes(form);
@@ -81,7 +102,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
   }, [form.clockHour, form.clockMinute, form.longitude, form.unknownTime, utcOffset]);
 
   const offsetMin = Math.round((form.longitude - utcOffset / 4) * 4);
-  const isVietnam = findProvince(form.province)?.country === 'VN';
+  const isVietnam = placeSystem !== 'cn' && !!findProvince(form.province);
   const shichenInfo = SHICHEN[branch];
 
   // ─── 校验逻辑 ───────────────────────────────────────────
@@ -111,7 +132,8 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
 
   // ─── Dòng tóm tắt: hiện khi đã điền đủ ô bắt buộc ─────────
   const showSummary = steps[0] && steps[2] && !hasError;
-  const cityText = findCity(form.province, form.city)?.label || findProvince(form.province)?.label || '';
+  const provinceText = findProvince(form.province)?.label ?? '';
+  const cityText = [form.city && cityList.find(c => c.value === form.city)?.label, provinceText].filter(Boolean).join(', ');
   const summaryText = showSummary
     ? [
         `${d}/${m}/${y}`,
@@ -121,14 +143,26 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
       ].filter(Boolean).join(' · ')
     : '';
 
+  const handleSystem = (sys: PlaceSystem) => {
+    if (sys === placeSystem) return;
+    setPlaceSystem(sys);
+    setForm({ ...form, province: '', city: '', longitude: 120, latitude: undefined });
+  };
+
+  // Chọn tỉnh: tạm lấy toạ độ tâm tỉnh, chọn thêm quận/huyện hoặc xã thì chính xác hơn.
   const handleProvince = (prov: string) => {
-    const firstCity = findProvince(prov)?.cities[0];
-    setForm({ ...form, province: prov, city: firstCity?.value || '', longitude: firstCity?.longitude ?? 120 });
+    const p = findProvince(prov);
+    setForm({ ...form, province: prov, city: '', longitude: p?.longitude ?? 120, latitude: p?.latitude });
   };
 
   const handleCity = (cityName: string) => {
-    const cityData = findCity(form.province, cityName);
-    setForm({ ...form, city: cityName, longitude: cityData?.longitude ?? 120 });
+    const unit = cityList.find(c => c.value === cityName);
+    const p = findProvince(form.province);
+    setForm({
+      ...form, city: cityName,
+      longitude: unit?.longitude ?? p?.longitude ?? 120,
+      latitude: unit?.latitude ?? p?.latitude,
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -285,37 +319,67 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
       {/* ── Nơi sinh ── */}
       <div style={{ marginBottom: '16px' }}>
         <label style={{ display: 'block', fontSize: '11px', color: labelClr, marginBottom: '6px', letterSpacing: '0.05em' }}>Nơi sinh (để tính giờ sinh chính xác hơn)</label>
+        {/* Chọn cách tìm nơi sinh */}
+        <div role="radiogroup" aria-label="Cách chọn nơi sinh" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '8px' }}>
+          {PLACE_SYSTEMS.map(sys => {
+            const active = sys.key === placeSystem;
+            return (
+              <button
+                key={sys.key}
+                type="button"
+                role="radio"
+                aria-checked={active}
+                onClick={() => handleSystem(sys.key)}
+                style={{
+                  padding: '8px 4px', borderRadius: '12px', fontSize: '12px', fontWeight: active ? 600 : 500, cursor: 'pointer',
+                  border: `1px solid ${active ? focusBorder : inputBorder}`,
+                  background: active ? (isDark ? 'rgba(212,168,67,0.14)' : 'rgba(200,140,30,0.10)') : inputBg,
+                  color: active ? goldText : (isDark ? 'rgba(190,205,225,0.75)' : 'rgba(100,80,40,0.6)'),
+                }}
+              >
+                {sys.label}
+              </button>
+            );
+          })}
+        </div>
+        <p style={{ fontSize: '10px', color: isDark ? 'rgba(165,185,210,0.7)' : 'rgba(140,100,20,0.5)', marginBottom: '8px' }}>{systemInfo.hint}</p>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
           <select
+            aria-label={systemInfo.provinceLabel}
             value={form.province}
             onChange={e => handleProvince(e.target.value)}
             style={inputStyle}
             onFocus={e => { e.target.style.borderColor = focusBorder; }}
             onBlur={e => { e.target.style.borderColor = inputBorder; }}
           >
-            <option value="">Tỉnh / thành phố</option>
-            {PLACE_GROUPS.map(g => (
-              <optgroup key={g.country} label={g.label}>
-                {g.provinces.map(p => (
-                  <option key={p.value} value={p.value}>{p.label}</option>
-                ))}
-              </optgroup>
+            <option value="">{systemInfo.provinceLabel}</option>
+            {provinceList.map(p => (
+              <option key={p.value} value={p.value}>{p.label}</option>
             ))}
           </select>
           <select
+            aria-label={systemInfo.unitLabel}
             value={form.city}
             onChange={e => handleCity(e.target.value)}
-            disabled={!form.province}
-            style={{ ...inputStyle, opacity: form.province ? 1 : 0.45 }}
+            disabled={!form.province || unitsState !== 'idle'}
+            style={{ ...inputStyle, opacity: form.province && unitsState === 'idle' ? 1 : 0.45 }}
             onFocus={e => { e.target.style.borderColor = focusBorder; }}
             onBlur={e => { e.target.style.borderColor = inputBorder; }}
           >
-            <option value="">{form.province ? 'Thành phố' : 'Chọn tỉnh trước'}</option>
+            <option value="">
+              {!form.province ? 'Chọn tỉnh trước' : unitsState === 'loading' ? 'Đang tải danh sách…' : `${systemInfo.unitLabel} (không bắt buộc)`}
+            </option>
             {cityList.map(c => (
               <option key={c.value} value={c.value}>{c.label}</option>
             ))}
           </select>
         </div>
+        {unitsState === 'error' && (
+          <p style={{ fontSize: '11px', color: errorClr, marginTop: '5px' }}>
+            Chưa tải được danh sách {systemInfo.unitLabel.toLowerCase()}. Bạn vẫn lập lá số được theo tỉnh, hoặc{' '}
+            <button type="button" onClick={() => setUnitsReload(n => n + 1)} style={{ textDecoration: 'underline', cursor: 'pointer', color: errorClr }}>tải lại</button>.
+          </p>
+        )}
         <AnimatePresence mode="wait">
           {form.province ? (
             <motion.p
@@ -325,7 +389,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
               exit={{ opacity: 0 }}
               style={{ fontSize: '10px', color: isDark ? 'rgba(180,210,235,0.85)' : 'rgba(100,70,10,0.5)', marginTop: '5px' }}
             >
-              {findCity(form.province, form.city)?.label || '(hãy chọn thành phố)'} · kinh độ {form.longitude.toFixed(1)}°Đ · giờ mặt trời {offsetMin > 0 ? 'nhanh' : 'chậm'} {Math.abs(offsetMin)} phút
+              {cityText} · kinh độ {form.longitude.toFixed(2)}°Đ · giờ mặt trời {offsetMin > 0 ? 'nhanh' : 'chậm'} {Math.abs(offsetMin)} phút
               {isVietnam && utcOffset !== 420 ? ` · lúc đó đồng hồ chạy giờ ${formatUtcOffset(utcOffset)}` : ''}
             </motion.p>
           ) : (

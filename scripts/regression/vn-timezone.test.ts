@@ -55,12 +55,13 @@ assert.equal(vnUtcOffsetMinutes('bac', 1945, 5, 1, 12, 0), 540, 'Hà Nội thán
 console.log('  ✓ miền Bắc GMT+7 từ 2/9/1945');
 
 // ── 3) Form ──
-function form(province: string, city: string, longitude: number, year: string, clockHour: string, clockMinute: string): BirthFormState {
-  return { name: '', year, month: '6', day: '15', clockHour, clockMinute, unknownTime: false, province, city, longitude, gender: 'male' };
+// Mã tỉnh cũ theo provinces.open-api.vn: 1 = Hà Nội, 45 = Quảng Trị, 79 = TP. Hồ Chí Minh; 79 ở danh sách mới cũng là TP. Hồ Chí Minh.
+function form(province: string, longitude: number, latitude: number | undefined, year: string, clockHour: string, clockMinute: string): BirthFormState {
+  return { name: '', year, month: '6', day: '15', clockHour, clockMinute, unknownTime: false, province, city: '', longitude, latitude, gender: 'male' };
 }
-const saigon = form('TP. Hồ Chí Minh', 'TP. Hồ Chí Minh', 106.70, '1965', '11', '30');
-const hanoi = form('Hà Nội', 'Hà Nội', 105.85, '1965', '11', '30');
-const none = form('', '', 120, '1965', '11', '30');
+const saigon = form('vn-old:79', 106.70, 10.78, '1965', '11', '30');
+const hanoi = form('vn-old:1', 105.85, 21.03, '1965', '11', '30');
+const none = form('', 120, undefined, '1965', '11', '30');
 assert.equal(formUtcOffsetMinutes(saigon), 480);
 assert.equal(formToBirthInfo(saigon).hour, 5, 'Sài Gòn 1965 11:30 → giờ Tỵ');
 assert.equal(formToBirthInfo(saigon).utcOffsetMinutes, 480);
@@ -72,11 +73,18 @@ assert.equal(calcTrueSolarBranch(11, 30, 106.70, 480), 5);
 assert.equal(calcTrueSolarBranch(11, 30, 106.70), 5, 'mặc định vẫn là giờ Bắc Kinh như bản gốc');
 
 // Vĩnh Linh nằm ở bờ bắc Bến Hải nên năm 1965 dùng giờ miền Bắc, dù cùng tỉnh Quảng Trị với Đông Hà.
-assert.equal(formUtcOffsetMinutes(form('Quảng Trị', 'Đông Hà', 107.10, '1965', '11', '30')), 480);
-assert.equal(formUtcOffsetMinutes(form('Quảng Trị', 'Vĩnh Linh (bờ bắc Bến Hải)', 107.03, '1965', '11', '30')), 420);
+assert.equal(formUtcOffsetMinutes(form('vn-old:45', 107.10, 16.82, '1965', '11', '30')), 480, 'Đông Hà 1965: GMT+8');
+assert.equal(formUtcOffsetMinutes(form('vn-old:45', 107.03, 17.05, '1965', '11', '30')), 420, 'Vĩnh Linh 1965: GMT+7');
+// Tỉnh mới Quảng Trị gộp cả Quảng Bình: xã ở Đồng Hới (vĩ độ 17,47) theo giờ miền Bắc.
+assert.equal(formUtcOffsetMinutes(form('vn-new:44', 106.62, 17.47, '1965', '11', '30')), 420, 'Đồng Hới 1965: GMT+7');
+assert.equal(formUtcOffsetMinutes(form('vn-new:79', 106.70, 10.78, '1965', '11', '30')), 480, 'TP. Hồ Chí Minh (tỉnh mới) 1965: GMT+8');
+// Chưa chọn xã: lấy tâm tỉnh.
+assert.equal(formUtcOffsetMinutes(form('vn-old:79', 106.70, undefined, '1965', '11', '30')), 480, 'chỉ chọn tỉnh: dùng vĩ độ tâm tỉnh');
+// Tỉnh Trung Quốc vẫn là giờ Bắc Kinh.
+assert.equal(formUtcOffsetMinutes(form('广东省', 113.26, undefined, '1965', '11', '30')), 480);
 
 // Giờ Tý muộn ở Việt Nam vẫn sang ngày hôm sau theo giờ mặt trời thật.
-const late = formToBirthInfo({ ...form('Hà Nội', 'Hà Nội', 105.85, '1990', '23', '30'), day: '31', month: '12' });
+const late = formToBirthInfo({ ...form('vn-old:1', 105.85, 21.03, '1990', '23', '30'), day: '31', month: '12' });
 assert.deepEqual([late.year, late.month, late.day, late.hour], [1991, 1, 1, 0], 'Hà Nội 23:30 ngày 31/12/1990 → giờ Tý ngày 1/1/1991');
 console.log('  ✓ form tính giờ mặt trời thật theo giờ chuẩn của nơi sinh');
 

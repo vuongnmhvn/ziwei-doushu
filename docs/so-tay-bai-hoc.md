@@ -13,7 +13,8 @@
 
 - **Ngày:** 2026-11-03
 - **Nguyên nhân:** `lib/ziwei/share.ts` gốc luôn coi giờ đồng hồ là giờ Bắc Kinh (kinh tuyến 120°). Với người sinh ở Việt Nam sẽ lệch 1 giờ, và miền Nam 1960–1975 còn dùng GMT+8.
-- **Cách làm:** `lib/ziwei/vn-timezone.ts` (bảng theo tz Asia/Ho_Chi_Minh; miền Bắc GMT+7 từ 2/9/1945) và `lib/ziwei/birth-place.ts` cho biết giờ chuẩn theo nơi sinh và ngày giờ sinh. Bài test `scripts/regression/vn-timezone.test.ts` đối chiếu từng giờ với dữ liệu tz của Node.
+- **Cách làm:** `lib/ziwei/vn-timezone.ts` (bảng theo tz Asia/Ho_Chi_Minh; miền Bắc GMT+7 từ 2/9/1945) và `lib/ziwei/birth-place.ts` cho biết giờ chuẩn theo nơi sinh và ngày giờ sinh. Miền giờ lấy theo vĩ độ nơi sinh so với vĩ tuyến 17 (không theo tên tỉnh), vì tỉnh mới sau 2025 có thể gộp qua hai miền (Quảng Trị mới gồm cả Quảng Bình).
+- **Dữ liệu nơi sinh:** danh sách tỉnh cũ (63, kèm quận/huyện) và tỉnh mới (34, kèm phường/xã) lấy từ provinces.open-api.vn; API không có toạ độ nên `scripts/data/build-vn-places.ts` tra OpenStreetMap (Nominatim 1 lượt/giây, Photon cho phường/xã), loại kết quả nằm ngoài khung tỉnh, có bộ nhớ đệm `scripts/data/geocode-cache.json`. Quận/huyện, xã ở `public/data/*.json`, chỉ tải khi chọn tỉnh. Kinh độ, vĩ độ nơi đã chọn lưu thẳng trong form và link chia sẻ (`lo`, `la`). Bài test `scripts/regression/vn-timezone.test.ts` đối chiếu từng giờ với dữ liệu tz của Node.
 - **Bẫy:** quét tz theo từng giờ để lấy mốc chuyển giờ sẽ làm tròn sai mốc 1911 (chuyển lúc 16:53:30 UTC, nửa đêm giờ 7:06:30). Lấy mốc từ dữ liệu tz rồi để test đối chiếu, đừng tin số làm tròn.
 
 ## 3. Soát chữ Hán còn sót: `grep -P "\p{Han}"` báo nhầm dòng chữ Việt
