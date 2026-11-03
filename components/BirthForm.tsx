@@ -374,7 +374,7 @@ export default function BirthForm({ onSubmit, loading, initialData, onFormSave, 
             </span>
             {shichenInfo && (
               <span style={{ fontSize: '10px', color: isDark ? 'rgba(170,195,220,0.75)' : 'rgba(140,100,20,0.5)', marginLeft: '4px' }}>
-                （{shichenInfo.range}）
+                ({shichenInfo.range.replace('-', '–')})
               </span>
             )}
           </div>

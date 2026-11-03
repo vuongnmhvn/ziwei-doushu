@@ -164,7 +164,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
             <div className="text-[10px] space-y-0.5" style={{ color: 'var(--t-faint)' }}>
               <div>Mệnh <span style={{ color: 'var(--t-gold)', opacity: 0.7 }}>{vi(BRANCHES[chart.mingGongBranch])}</span></div>
               <div>Thân <span className="text-sky-500/70">{vi(BRANCHES[chart.shenGongBranch])}</span></div>
-              <div className="text-[9px]" style={{ color: 'var(--t-gold)', opacity: 0.75 }}>{chart.wuxingJuName}</div>
+              <div className="text-[9px]" style={{ color: 'var(--t-gold)', opacity: 0.75 }}>{vi(chart.wuxingJuName)}</div>
             </div>
           </div>
 
@@ -175,7 +175,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
                 style={{ background: 'rgba(147,51,234,0.06)' }}>
                 <div className="text-[8px] text-purple-500/80 mb-0.5 tracking-wider">Đại hạn hiện tại</div>
                 <div className="text-[12px] text-purple-400 font-medium tabular-nums">{dx.startAge}–{dx.endAge} tuổi</div>
-                <div className="text-[9px] text-purple-500/60">{dx.palaceName}</div>
+                <div className="text-[9px] text-purple-500/60">{vi(dx.palaceName)}</div>
               </div>
             );
           })()}
