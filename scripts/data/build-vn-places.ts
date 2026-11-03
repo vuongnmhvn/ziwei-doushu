@@ -177,6 +177,19 @@ async function main() {
       console.log(`  [cũ] ${p.name}: ${r.rows.length} quận/huyện, ${r.approx} gần đúng`);
     }
   })();
+  // OSM hiện chỉ còn địa giới mới, nên tâm của tỉnh cũ đã sáp nhập có thể rơi vào tỉnh mới (Quảng Trị cũ ra 17,22°B,
+  // tức bờ bắc Bến Hải). Lấy tâm tỉnh cũ = trung vị toạ độ các quận/huyện tìm được của chính tỉnh đó,
+  // rồi cho các quận/huyện "gần đúng" dùng tâm mới này.
+  await districtsDone;
+  const median = (xs: number[]) => { const s = [...xs].sort((a, b) => a - b); return s[Math.floor(s.length / 2)]; };
+  for (const p of v1) {
+    const exact = oldOut[p.code].filter(r => !r[3]);
+    if (!exact.length) continue;
+    const c = { lon: median(exact.map(r => r[1])), lat: median(exact.map(r => r[2])) };
+    centers.set(`old:${p.code}`, { ...centers.get(`old:${p.code}`)!, ...c });
+    for (const r of oldOut[p.code]) if (r[3]) { r[1] = round(c.lon); r[2] = round(c.lat); }
+  }
+
   const allWards = v2.flatMap(p => (p.wards ?? []).map(w => ({ w, p })));
   const legacyDone = mapLimit(allWards, 4, ({ w }) => legacyDistrictOf(w.code));
   const [, legacy] = await Promise.all([districtsDone, legacyDone]);
