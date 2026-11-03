@@ -4,6 +4,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ScrollIntro from '@/components/ScrollIntro';
 
+// Chữ có dấu tiếng Việt: dùng phông serif có đủ dấu thay cho phông Tống/Khải thể của chữ Hán
+const SERIF = '"Noto Serif", "Times New Roman", Georgia, serif';
+
 export default function PreviewPage() {
   const router = useRouter();
   // replayKey 用于强制重置 ScrollIntro（用户点"再播放一次"时）
@@ -24,30 +27,31 @@ export default function PreviewPage() {
           display: 'flex', flexDirection: 'column',
           alignItems: 'center', justifyContent: 'center',
           padding: '48px 24px',
-          fontFamily: '"STSong", "Songti SC", serif',
+          fontFamily: SERIF,
           textAlign: 'center',
         }}>
-          <div style={{ fontSize: '11px', letterSpacing: '0.4em', color: '#c89647', marginBottom: '16px' }}>
+          <div style={{ fontSize: '11px', letterSpacing: '0.3em', color: '#c89647', marginBottom: '16px' }}>
             SCROLL · INTRO · PREVIEW
           </div>
           <h1 style={{
             fontSize: 'clamp(28px, 3.5vw, 40px)',
-            letterSpacing: '0.18em',
+            letterSpacing: '0.04em',
             color: '#e8dcc4',
             marginBottom: '16px',
             fontWeight: 600,
           }}>
-            紫微卷轴 · 开场预览
+            Cuộn giấy Tử Vi · Xem thử màn mở đầu
           </h1>
           <p style={{
             fontSize: '14px', color: '#a89878',
             maxWidth: '500px', lineHeight: 1.9,
-            letterSpacing: '0.1em',
+            letterSpacing: '0.02em',
             marginBottom: '40px',
-            fontFamily: '"STKaiti", "Kaiti SC", serif',
+            fontFamily: SERIF,
+            fontStyle: 'italic',
           }}>
-            刚才看到的卷轴效果会在每次进入主页时缓缓铺开。<br />
-            如果满意，告诉我，我把它接到主页 / 上线。
+            Cuộn giấy bạn vừa xem sẽ từ từ mở ra mỗi lần vào trang chủ.<br />
+            Nếu thấy ưng ý, hãy báo mình để mình gắn nó vào trang chủ và đưa lên chạy thật.
           </p>
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '24px' }}>
@@ -58,14 +62,14 @@ export default function PreviewPage() {
                 color: '#f5ecd7',
                 padding: '14px 28px',
                 fontSize: '14px',
-                fontFamily: '"STSong", serif',
-                letterSpacing: '0.3em',
+                fontFamily: SERIF,
+                letterSpacing: '0.06em',
                 border: 'none',
                 cursor: 'pointer',
                 fontWeight: 600,
               }}
             >
-              再 播 放 一 次
+              Xem lại lần nữa
             </button>
             <button
               onClick={() => router.push('/')}
@@ -74,26 +78,26 @@ export default function PreviewPage() {
                 color: '#e8dcc4',
                 padding: '14px 28px',
                 fontSize: '14px',
-                fontFamily: '"STSong", serif',
-                letterSpacing: '0.3em',
+                fontFamily: SERIF,
+                letterSpacing: '0.06em',
                 border: '1px solid rgba(232,220,196,0.25)',
                 cursor: 'pointer',
               }}
             >
-              进 入 原 版 首 页
+              Vào trang chủ hiện tại
             </button>
           </div>
 
           <div style={{
             marginTop: '40px', fontSize: '12px', color: '#6e6048',
-            letterSpacing: '0.15em',
-            display: 'flex', gap: '20px',
+            letterSpacing: '0.05em',
+            display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center',
           }}>
-            <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }}>原版 ↗</Link>
+            <Link href="/" style={{ color: 'inherit', textDecoration: 'none' }}>Trang chủ ↗</Link>
             <span>·</span>
-            <Link href="/chart" style={{ color: 'inherit', textDecoration: 'none' }}>命盘</Link>
+            <Link href="/chart" style={{ color: 'inherit', textDecoration: 'none' }}>Lập lá số</Link>
             <span>·</span>
-            <Link href="/heming" style={{ color: 'inherit', textDecoration: 'none' }}>合盘</Link>
+            <Link href="/heming" style={{ color: 'inherit', textDecoration: 'none' }}>Xem đôi</Link>
           </div>
 
           {/* 时间轴说明 */}
@@ -105,17 +109,17 @@ export default function PreviewPage() {
             fontSize: '12px',
             color: '#a89878',
             lineHeight: 1.9,
-            letterSpacing: '0.1em',
-            fontFamily: '"STKaiti", serif',
+            letterSpacing: '0.02em',
+            fontFamily: SERIF,
             textAlign: 'left',
           }}>
-            <div style={{ color: '#c89647', marginBottom: '12px', letterSpacing: '0.2em', fontSize: '11px' }}>动画时间轴</div>
-            <div>· 0.0 ~ 1.7 s &nbsp;&nbsp;卷轴从中央向两侧展开</div>
-            <div>· 1.9 ~ 2.7 s &nbsp;&nbsp;宣纸内容浮现（标题 + 副标 + 朱砂印）</div>
-            <div>· 2.7 ~ 3.5 s &nbsp;&nbsp;停留欣赏</div>
-            <div>· 3.5 ~ 4.2 s &nbsp;&nbsp;整体淡出，进入主页</div>
+            <div style={{ color: '#c89647', marginBottom: '12px', letterSpacing: '0.08em', fontSize: '11px' }}>Các bước của hiệu ứng</div>
+            <div>· 0.0 ~ 1.7 s &nbsp;&nbsp;Cuộn giấy mở ra từ phải sang trái</div>
+            <div>· 1.9 ~ 2.7 s &nbsp;&nbsp;Chữ trên giấy hiện dần (tiêu đề, dòng phụ, con dấu đỏ)</div>
+            <div>· 2.7 ~ 3.5 s &nbsp;&nbsp;Dừng lại để ngắm</div>
+            <div>· 3.5 ~ 4.2 s &nbsp;&nbsp;Mờ dần rồi vào trang chủ</div>
             <div style={{ marginTop: '12px', color: '#6e6048', fontSize: '11px' }}>
-              用户随时可点右下「跳过」直接进入主页。
+              Lúc nào cũng có thể bấm &ldquo;Bỏ qua&rdquo; ở góc dưới bên phải để vào thẳng trang chủ.
             </div>
           </div>
         </main>

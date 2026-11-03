@@ -73,7 +73,7 @@ export default function AnnouncementModal() {
               border: '1px solid rgba(184,146,42,0.25)',
               display: 'flex',
               flexDirection: 'column',
-              fontFamily: '"PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif',
+              fontFamily: 'var(--font)',
             }}
           >
             {/* 顶部装饰 + 关闭按钮 */}
@@ -87,12 +87,12 @@ export default function AnnouncementModal() {
               <div style={{ fontSize: '10px', letterSpacing: '0.4em', color: '#b8922a', opacity: 0.7, marginBottom: '6px' }}>
                 A LETTER TO USERS
               </div>
-              <h2 style={{ fontSize: '19px', fontWeight: 700, color: '#3d2f10', letterSpacing: '0.08em', margin: 0 }}>
-                致正在使用这个平台的你
+              <h2 style={{ fontSize: '19px', fontWeight: 700, color: '#3d2f10', letterSpacing: '0.02em', margin: 0, paddingRight: '32px' }}>
+                Gửi bạn, người đang dùng trang này
               </h2>
               <button
                 onClick={close}
-                aria-label="关闭"
+                aria-label="Đóng thư"
                 style={{
                   position: 'absolute', top: '14px', right: '16px',
                   width: '28px', height: '28px',
@@ -116,13 +116,13 @@ export default function AnnouncementModal() {
               flexShrink: 0,
               textAlign: 'center',
             }}>
-              <div style={{ fontSize: '10px', letterSpacing: '0.3em', color: '#c45a2d', marginBottom: '4px', fontWeight: 600 }}>
-                LIMITED TIME · 限时回馈
+              <div style={{ fontSize: '10px', letterSpacing: '0.2em', color: '#c45a2d', marginBottom: '4px', fontWeight: 600 }}>
+                LIMITED TIME · QUÀ TRI ÂN CÓ HẠN
               </div>
               <div style={{ fontSize: '14px', color: '#8b3a1a', fontWeight: 600, lineHeight: 1.6 }}>
-                <span style={{ fontSize: '16px', color: '#c45a2d', fontWeight: 700 }}>5 月 1 日 — 5 月 8 日</span>
+                <span style={{ fontSize: '16px', color: '#c45a2d', fontWeight: 700 }}>Từ 1/5 đến 8/5</span>
                 <br />
-                平台全部功能 + AI 提问 全部免费开放
+                Mọi tính năng và hỏi AI đều miễn phí
               </div>
             </div>
 
@@ -136,13 +136,13 @@ export default function AnnouncementModal() {
               flex: 1,
             }}>
               <p style={{ margin: '0 0 12px' }}>
-                说实话，我真的没想到会有这么大的流量。
+                Nói thật, mình không ngờ lại có nhiều người ghé xem đến vậy.
               </p>
               <p style={{ margin: '0 0 12px' }}>
-                最开始做这个平台，我的初心其实很简单：在 AI 时代，把倪师这套原本复杂、门槛很高的体系，尽量做得更简单、更高效、更容易理解。
+                Lúc mới làm trang này, mong muốn của mình rất đơn giản: trong thời của AI, biến hệ thống của Nghê sư (vốn phức tạp và khó học) thành thứ đơn giản hơn, nhanh hơn và dễ hiểu hơn.
               </p>
               <p style={{ margin: '0 0 12px' }}>
-                不一定每个人都要先学很久、看很多书，才能接触这些内容。我们希望通过这个平台，让大家用更轻松的方式，获得一些对自我、人生阶段、选择方向的参考和启发。
+                Không phải ai cũng cần học thật lâu, đọc thật nhiều sách mới được biết đến những điều này. Bọn mình mong trang này giúp mọi người, bằng cách nhẹ nhàng hơn, có thêm gợi ý để hiểu bản thân, hiểu từng giai đoạn cuộc đời và hướng đi nên chọn.
               </p>
               <p style={{
                 margin: '0 0 12px',
@@ -153,22 +153,25 @@ export default function AnnouncementModal() {
                 fontStyle: 'italic',
                 color: '#7a5e2a',
               }}>
-                倪师曾说过一句话：人怎么可能发明出完全没有用的东西呢？
+                <span lang="zh">倪师曾说过一句话：人怎么可能发明出完全没有用的东西呢？</span>
+                <span style={{ display: 'block', marginTop: '4px', fontSize: '13px', fontStyle: 'normal', opacity: 0.85 }}>
+                  Nghê sư từng nói: con người sao có thể phát minh ra thứ hoàn toàn vô dụng được?
+                </span>
               </p>
               <p style={{ margin: '0 0 12px' }}>
-                我一直觉得，易经如此，紫微斗数也是如此。它们真正有价值的地方，不是让人被某个结果困住，而是让我们更早看见自己的性格惯性、人生课题和选择方向。看见之后，才有机会调整；理解之后，才有机会变得更好。
+                Mình luôn nghĩ: Kinh Dịch là vậy, Tử Vi Đẩu Số cũng vậy. Giá trị thật của chúng không phải là trói người ta vào một kết quả nào đó, mà là giúp mình sớm nhìn ra thói quen tính cách, bài học cuộc đời và hướng đi của chính mình. Nhìn thấy rồi mới có cơ hội điều chỉnh; hiểu rồi mới có cơ hội trở nên tốt hơn.
               </p>
               <p style={{ margin: '0 0 12px' }}>
-                至于那些说&ldquo;你当下在看这些，其实也是命运的一部分&rdquo;之类的话，我就不多评价了。
+                Còn những câu kiểu &ldquo;việc bạn đang đọc những dòng này cũng là một phần của số mệnh&rdquo;, mình xin không bàn thêm.
               </p>
               <p style={{ margin: '0 0 12px' }}>
-                这几天账号被小红书抬走了，<strong style={{ color: '#c45a2d' }}>5 月 3 号开始恢复正常更新。</strong>
+                Mấy hôm nay tài khoản Tiểu Hồng Thư (Xiaohongshu) của mình bị khoá, <strong style={{ color: '#c45a2d' }}>từ ngày 3/5 sẽ đăng bài lại như bình thường.</strong>
               </p>
               <p style={{ margin: '0 0 16px', color: '#3d2f10', fontWeight: 500 }}>
-                最后，真心祝愿大家都能越来越了解自己，越来越爱自己，也越来越有能力爱身边的人。
+                Cuối cùng, mình thật lòng chúc mọi người ngày càng hiểu mình hơn, thương mình hơn, và cũng ngày càng đủ sức thương những người bên cạnh.
               </p>
               <p style={{ margin: 0, textAlign: 'right', fontSize: '13px', color: '#7a5e2a' }}>
-                ——谢谢大家 🙏
+                — Cảm ơn mọi người 🙏
               </p>
             </div>
 
@@ -191,13 +194,13 @@ export default function AnnouncementModal() {
                   border: 'none',
                   borderRadius: '10px',
                   fontSize: '13px',
-                  letterSpacing: '0.1em',
+                  letterSpacing: '0.02em',
                   fontWeight: 500,
                   cursor: 'pointer',
                   boxShadow: '0 4px 12px rgba(184,146,42,0.3)',
                 }}
               >
-                我知道了
+                Đã đọc, vào trang
               </button>
             </div>
           </motion.div>

@@ -8,9 +8,13 @@ interface ScrollIntroProps {
   skipLabel?: string;
 }
 
-const BEIDOU = ['天枢', '天璇', '天玑', '天权', '玉衡', '开阳', '摇光'];
+// Tên bảy sao Bắc Đẩu theo âm Hán Việt
+const BEIDOU = ['Thiên Xu', 'Thiên Toàn', 'Thiên Cơ', 'Thiên Quyền', 'Ngọc Hành', 'Khai Dương', 'Dao Quang'];
 
-export default function ScrollIntro({ onComplete, skipLabel = '跳 过' }: ScrollIntroProps) {
+// Chữ có dấu tiếng Việt: dùng phông serif có đủ dấu thay cho phông Tống/Khải thể của chữ Hán
+const SERIF = '"Noto Serif", "Times New Roman", Georgia, serif';
+
+export default function ScrollIntro({ onComplete, skipLabel = 'Bỏ qua' }: ScrollIntroProps) {
   // visible：整个 intro 是否在显示
   // unrolled：卷轴是否已展开（控制内容浮现）
   const [visible, setVisible] = useState(true);
@@ -125,17 +129,19 @@ export default function ScrollIntro({ onComplete, skipLabel = '跳 过' }: Scrol
                   display: 'flex', flexDirection: 'column',
                   alignItems: 'center', justifyContent: 'center',
                   padding: '0 clamp(40px, 8vw, 120px)',
-                  fontFamily: '"STSong", "Songti SC", "SimSun", serif',
+                  fontFamily: SERIF,
                 }}
               >
                 {/* 顶部装饰：北斗七星名 */}
                 <div style={{
                   fontSize: 'clamp(10px, 1.1vw, 12px)',
                   color: '#8b5d18',
-                  letterSpacing: '0.45em',
+                  letterSpacing: '0.12em',
                   marginBottom: 'clamp(20px, 3vh, 36px)',
-                  fontFamily: '"STKaiti", "Kaiti SC", serif',
-                  whiteSpace: 'nowrap',
+                  fontFamily: SERIF,
+                  fontStyle: 'italic',
+                  textAlign: 'center',
+                  lineHeight: 1.6,
                   opacity: 0.85,
                 }}>
                   {BEIDOU.join(' · ')}
@@ -150,39 +156,40 @@ export default function ScrollIntro({ onComplete, skipLabel = '跳 过' }: Scrol
 
                 {/* 大字「紫微命盘」 */}
                 <h1 style={{
-                  fontSize: 'clamp(48px, 8vw, 110px)',
+                  fontSize: 'clamp(30px, 7vw, 92px)',
                   fontWeight: 700,
                   color: '#1a1208',
-                  letterSpacing: 'clamp(0.18em, 0.25vw, 0.3em)',
-                  lineHeight: 1.05,
+                  letterSpacing: '0.04em',
+                  lineHeight: 1.15,
                   margin: 0,
                   textShadow: '0 1px 0 rgba(255,250,235,0.3)',
-                  whiteSpace: 'nowrap',
+                  textAlign: 'center',
                 }}>
-                  紫微命盘
+                  Lá số Tử Vi
                 </h1>
 
                 {/* 副标 楷体 */}
                 <div style={{
                   fontSize: 'clamp(13px, 1.5vw, 18px)',
                   color: '#6b4818',
-                  letterSpacing: '0.4em',
-                  fontFamily: '"STKaiti", "Kaiti SC", serif',
+                  letterSpacing: '0.1em',
+                  fontFamily: SERIF,
+                  fontStyle: 'italic',
                   marginTop: 'clamp(16px, 2.5vh, 24px)',
                   marginBottom: '6px',
-                  whiteSpace: 'nowrap',
+                  textAlign: 'center',
                 }}>
-                  观 天 之 象 · 察 人 之 命
+                  Xem tượng trời · Hiểu mệnh người
                 </div>
                 <div style={{
                   fontSize: 'clamp(11px, 1.2vw, 14px)',
                   color: '#8b6410',
-                  letterSpacing: '0.3em',
-                  fontFamily: '"STSong", serif',
-                  whiteSpace: 'nowrap',
+                  letterSpacing: '0.06em',
+                  fontFamily: SERIF,
+                  textAlign: 'center',
                   opacity: 0.85,
                 }}>
-                  倪海厦《天纪》正宗体系
+                  Theo đúng hệ thống Thiên Kỷ của Nghê Hải Hạ
                 </div>
 
                 {/* 朱砂方印 */}
@@ -200,16 +207,19 @@ export default function ScrollIntro({ onComplete, skipLabel = '跳 过' }: Scrol
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontFamily: '"STSong", serif',
+                    fontFamily: SERIF,
                     fontWeight: 700,
                     lineHeight: 1.05,
                     letterSpacing: 0,
                     boxShadow: '0 2px 6px rgba(0,0,0,0.3), inset 0 0 0 2px rgba(245,236,215,0.15)',
-                    fontSize: 'clamp(11px, 1.2vw, 13px)',
+                    fontSize: 'clamp(9px, 1vw, 11px)',
+                    textAlign: 'center',
                   }}
+                  aria-label="Ấn của Vương Đa Ngư"
                 >
-                  <div style={{ display: 'flex', gap: '0' }}><span>王</span><span>多</span></div>
-                  <div style={{ display: 'flex', gap: '0' }}><span>鱼</span><span>印</span></div>
+                  {/* Ấn son ghi tên tác giả gốc (王多鱼印), viết theo âm Hán Việt */}
+                  <div>VƯƠNG</div>
+                  <div>ĐA NGƯ</div>
                 </motion.div>
 
                 {/* 底部装饰：八卦 */}
@@ -297,8 +307,8 @@ export default function ScrollIntro({ onComplete, skipLabel = '跳 过' }: Scrol
               borderRadius: '4px',
               fontSize: '12px',
               cursor: 'pointer',
-              fontFamily: '"STSong", serif',
-              letterSpacing: '0.25em',
+              fontFamily: SERIF,
+              letterSpacing: '0.08em',
               transition: 'border-color 0.2s, color 0.2s',
             }}
             onMouseEnter={e => {

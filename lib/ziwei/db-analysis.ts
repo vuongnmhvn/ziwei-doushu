@@ -31,20 +31,21 @@ export const TOPIC_PALACE_NAME: Record<TopicKey, string> = {
   parents:     '父母',
 };
 
+/** Tên chủ đề hiển thị trên giao diện (tiếng Việt). Khoá vẫn là mã tiếng Anh dùng trong URL. */
 export const TOPIC_LABEL: Record<TopicKey, string> = {
-  overview:    '命格总览',
-  personality: '性格特质',
-  love:        '感情婚姻',
-  career:      '事业职业',
-  wealth:      '财富运势',
-  health:      '健康状况',
-  family:      '兄弟合伙',
-  children:    '子女缘分',
-  move:        '迁移外出',
-  friends:     '人际贵人',
-  home:        '田宅不动产',
-  spirit:      '精神福德',
-  parents:     '父母长辈',
+  overview:    'Tổng quan lá số',
+  personality: 'Tính cách',
+  love:        'Tình cảm, hôn nhân',
+  career:      'Sự nghiệp',
+  wealth:      'Tiền bạc',
+  health:      'Sức khoẻ',
+  family:      'Anh chị em, người cùng làm ăn',
+  children:    'Con cái',
+  move:        'Đi xa, ra ngoài',
+  friends:     'Bạn bè, quý nhân',
+  home:        'Nhà cửa, đất đai',
+  spirit:      'Phúc đức, đời sống tinh thần',
+  parents:     'Cha mẹ, bề trên',
 };
 
 /**
